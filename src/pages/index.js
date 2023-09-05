@@ -1,41 +1,67 @@
-import React from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import React, { useState } from "react";
+import firebase from "../../firebase-config";
 
-import styles from './index.module.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      // 특정한 데이터로 로그인을 허용하는 조건을 설정합니다.
+      if (email === "deespan@gmail.com" && password === "kang20660562@") {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        // 성공적으로 로그인되었으므로 리다이렉트 등의 작업 수행
+        window.location.href = "/login";
+      } else {
+        setErrorMessage("로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("로그인 실패:", error);
+    }
+  };
+
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
-          </Link>
+    <div className="container">
+      <h1 className="text-center mt-5">로그인 페이지</h1>
+
+      <form>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            이메일
+          </label>
+          <input
+            type="text"
+            id="email"
+            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
-      </div>
-    </header>
+
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            비밀번호
+          </label>
+          <input
+            type="password"
+            id="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {errorMessage && <p className="text-danger">{errorMessage}</p>}
+
+        <button type="button" className="btn btn-primary" onClick={handleLogin}>
+          로그인
+        </button>
+      </form>
+    </div>
   );
 }
 
-export default function Home() {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-      </main>
-    </Layout>
-  );
-}
+export default LoginPage;
